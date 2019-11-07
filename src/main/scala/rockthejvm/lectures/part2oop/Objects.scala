@@ -1,6 +1,6 @@
-package lectures.part2oop
+package rockthejvm.lectures.part2oop
 
-import scala.reflect.internal.FatalError
+//import scala.reflect.internal.FatalError
 
 object Objects extends App {
 

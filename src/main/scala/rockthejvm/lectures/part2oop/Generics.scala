@@ -1,4 +1,4 @@
-package lectures.part2oop
+package rockthejvm.lectures.part2oop
 
 object Generics extends App {
 

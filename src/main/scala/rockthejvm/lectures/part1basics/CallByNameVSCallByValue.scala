@@ -1,4 +1,4 @@
-package lectures.part1basics
+package rockthejvm.lectures.part1basics
 
 object CallByNameVSCallByValue extends App {
 

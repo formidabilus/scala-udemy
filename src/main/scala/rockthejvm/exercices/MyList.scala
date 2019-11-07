@@ -1,4 +1,4 @@
-package exercises
+package rockthejvm.exercices
 
 abstract class MyList[+A] {
 
@@ -44,9 +44,13 @@ class Cons[+A](h: A, t: MyList[A]) extends MyList[A]  {
   override def printElements: String =
     if(t.isEmpty) "" + h
     else h + " " + t.printElements
-  def filter(predicate: MyPredicate[A]: MyList[A]) =
+  def filter(predicate: MyPredicate[A]): MyList[A] =
     if(predicate.test(h)) new Cons(h, t.filter(predicate))
     else t.filter(predicate)
+
+  override def map[B](transformer: MyTransformer[A, B]): MyList[B] = ???
+
+  override def flatMap[B](transformer: MyTransformer[A, MyList[B]]): MyList[B] = ???
 }
 
 trait MyPredicate[-T] {
