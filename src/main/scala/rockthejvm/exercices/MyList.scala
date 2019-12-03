@@ -25,6 +25,10 @@ abstract class MyList[+A] {
 
   //concatenation
   def ++[B >: A](list: MyList[B]): MyList[B]
+
+  // hofs
+  def foreach(f: A => Unit): Unit
+
 }
 
 
@@ -39,6 +43,10 @@ case object Empty extends MyList[Nothing] {
   def filter(predicate: Nothing => Boolean): MyList[Nothing] = Empty
 
   def ++[B >: Nothing](list: MyList[B]): MyList[B] = list
+
+  //hofs
+  def foreach(f: Nothing => Unit): Unit = ()
+
 }
 
 case class Cons[+A](h: A, t: MyList[A]) extends MyList[A]  {
@@ -92,6 +100,12 @@ case class Cons[+A](h: A, t: MyList[A]) extends MyList[A]  {
   def flatMap[B](transformer: A => MyList[B]): MyList[B] =
     transformer(h) ++ t.flatMap(transformer)
 
+  // hofs
+  def foreach(f: A => Unit): Unit = {
+    f(h)
+    t.foreach(f)
+  }
+
 }
 
 //trait MyPredicate[-T] { // T => Boolean
@@ -130,5 +144,7 @@ object ListTest extends App {
   println(listOfIntegers.flatMap(elem => new Cons(elem, new Cons(elem + 1, Empty))
   ).toString)
 
-println(cloneListOfIntegers == listOfIntegers)
+  println(cloneListOfIntegers == listOfIntegers)
+
+  listOfIntegers.foreach(println)
 }
