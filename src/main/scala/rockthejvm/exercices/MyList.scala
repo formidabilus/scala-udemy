@@ -28,6 +28,7 @@ abstract class MyList[+A] {
 
   // hofs
   def foreach(f: A => Unit): Unit
+  def sort(compare: (A, A) => Int): MyList[A]
 
 }
 
@@ -46,6 +47,7 @@ case object Empty extends MyList[Nothing] {
 
   //hofs
   def foreach(f: Nothing => Unit): Unit = ()
+  def sort(compare: (Nothing, Nothing) => Int) = Empty
 
 }
 
@@ -106,6 +108,14 @@ case class Cons[+A](h: A, t: MyList[A]) extends MyList[A]  {
     t.foreach(f)
   }
 
+  def sort(compare: (A, A) => Int): MyList[A] = {
+    def insert(x: A, sortedList: MyList[A]): MyList[A] =
+      if (sortedList.isEmpty) new Cons(x, Empty)
+      else if (compare(x, sortedList.head) <= 0) new Cons(x, sortedList)
+      else new Cons(sortedList.head, insert(x, sortedList.tail))
+    val  sortedTail = t.sort(compare)
+    insert(h, sortedTail)
+  }
 }
 
 //trait MyPredicate[-T] { // T => Boolean
