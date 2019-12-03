@@ -113,7 +113,8 @@ case class Cons[+A](h: A, t: MyList[A]) extends MyList[A]  {
       if (sortedList.isEmpty) new Cons(x, Empty)
       else if (compare(x, sortedList.head) <= 0) new Cons(x, sortedList)
       else new Cons(sortedList.head, insert(x, sortedList.tail))
-    val  sortedTail = t.sort(compare)
+
+    val sortedTail = t.sort(compare)
     insert(h, sortedTail)
   }
 }
