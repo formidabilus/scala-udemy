@@ -29,6 +29,8 @@ abstract class MyList[+A] {
   // hofs
   def foreach(f: A => Unit): Unit
   def sort(compare: (A, A) => Int): MyList[A]
+  def zipWith[B, C](list: MyList[B], zip:(A, B) => C): MyList[C]
+  def fold[B](start: B)(operator: (B, A) => B): B
 
 }
 
@@ -49,6 +51,11 @@ case object Empty extends MyList[Nothing] {
   def foreach(f: Nothing => Unit): Unit = ()
   def sort(compare: (Nothing, Nothing) => Int) = Empty
 
+  override def zipWith[B, C](list: MyList[B], zip: (Nothing, B) => C): MyList[C] =
+    if (!list.isEmpty) throw new RuntimeException("Lists do not have the same length")
+    else Empty
+
+  override def fold[B](start: B)(operator: (B, Nothing) => B): B = start
 }
 
 case class Cons[+A](h: A, t: MyList[A]) extends MyList[A]  {
@@ -117,6 +124,22 @@ case class Cons[+A](h: A, t: MyList[A]) extends MyList[A]  {
     val sortedTail = t.sort(compare)
     insert(h, sortedTail)
   }
+
+  override def zipWith[B, C](list: MyList[B], zip: (A, B) => C): MyList[C] =
+    if (list.isEmpty) throw new RuntimeException("Lists do not have the same length")
+    else new Cons(zip(h, list.head), t.zipWith(list.tail, zip))
+
+  /*
+    [1,2,3].fold(0)(+) =
+    = [2,3].fold(1)(+) =
+    = [3].fold(3)(+) =
+    = [].fold(6)(+) =
+    = 6
+   */
+  override def fold[B](start: B)(operator: (B, A) => B): B = {
+    t.fold(operator(start, h))(operator)
+  }
+
 }
 
 //trait MyPredicate[-T] { // T => Boolean
@@ -158,4 +181,8 @@ object ListTest extends App {
   println(cloneListOfIntegers == listOfIntegers)
 
   listOfIntegers.foreach(println)
+  println(listOfIntegers.sort((x, y) => y - x))
+  println(anotherListOfIntegers.zipWith[String, String](listOfStrings, _ + "-" + _))
+
+  println(listOfIntegers.fold(0)(_ + _))
 }
