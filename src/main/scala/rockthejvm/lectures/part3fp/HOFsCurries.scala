@@ -57,10 +57,62 @@ object HOFsCurries extends App {
        - fold
          [1,2,3].fold(0) (x + y) = 6
 
-     2. toCurry(f: (Int, Int) => (Int => Int => Int)
-        fromCurry(f: (Int => Int => Int)) = (Int, Int) => Int
+     2. toCurry(f: (Int, Int) => Int) => (Int => Int => Int)
+        fromCurry(f: (Int => Int => Int)) => (Int, Int) => Int
 
      3. compose(f,g) => x => f(g(x))
         andThen(f,g) => x => g(f(x))
   */
+
+  def toCurry(f: (Int, Int) => Int): (Int => Int => Int) =
+    (x: Int) => (y: Int) => (f(x, y): Int)
+
+  def fromCurry(f: (Int => Int => Int)): (Int, Int) => Int =
+    (x, y) => f(x)(y)
+
+  def fromCurry2(f: (Int => Int => Int)): Int => Int => Int =
+    (x) => f(x)
+
+  def fromCurry(f: (Int, Int) => Int): (Int, Int) => Int =
+    (x, y) => f(x, y)
+
+  //FunctionX
+//  def compose(f: Int => Int, g: Int => Int): Int => Int =
+//    x => f(g(x))
+//
+//  def andThen(f: Int => Int, g: Int => Int): Int => Int =
+//    x => g(f(x))
+  def compose[A,B,T](f: A => B, g: T => A): T => B =
+  x => f(g(x))
+
+  def compose2[A,B,T](f: A => B, g: T => A, x: T): B =
+    f(g(x))
+
+  def compose3[A,B,T](f: A => B, g: T => A) (x: T): B =
+    f(g(x))
+
+  def andThen[A,B,C](f: A => B, g: B => C): A => C =
+    x => g(f(x))
+
+  def superAdder2: (Int => Int => Int) = toCurry(_ + _)
+  def add4 = superAdder2(4)
+  println(add4(17))
+
+  val simpleAdder: (Int, Int) => Int = fromCurry(superAdder)
+  val simpleAdder2: Int => Int => Int = fromCurry2(superAdder)
+  println(simpleAdder(4,17))
+  println("--> " + simpleAdder2(4)(17))
+
+  val add2 = (x: Int) => x + 2
+  val times3 = (x: Int) => x * 3
+
+  val composed = compose(add2, times3)
+  def composed2(x: Int) = compose2[Int,Int,Int](add2, times3, x)
+  def composed3(x: Int) = compose3[Int,Int,Int](add2, times3)(x)
+  val composed4: Int => Int = compose3[Int,Int,Int](add2, times3)
+  val ordered = andThen(add2, times3)
+
+  println(composed(4))
+  println(composed2(4))
+  println(ordered(4))
 }
